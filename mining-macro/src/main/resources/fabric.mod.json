@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "miningmacro",
+  "version": "${version}",
+  "name": "Mining Macro",
+  "description": "範囲指定の2マス高採掘マクロ。水流・穴の回避、鉱脈回収、指定アイテム回収、経験値瓶による自動修繕つき。",
+  "license": "GPL-3.0",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.miningmacro.MiningMacroClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

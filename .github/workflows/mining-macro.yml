@@ -1,0 +1,29 @@
+name: mining-macro build
+
+on:
+  push:
+    paths:
+      - 'mining-macro/**'
+      - '.github/workflows/mining-macro.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mining-macro
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Build
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mining-macro-jar
+          path: mining-macro/build/libs/*.jar
