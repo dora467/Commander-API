@@ -48,7 +48,7 @@ public class MiningMacroClient implements ClientModInitializer {
             MinecraftClient mc = MinecraftClient.getInstance();
             String text = controller.hudText();
             if (text != null && !mc.options.hudHidden) {
-                ctx.drawTextWithShadow(mc.textRenderer, text, 4, 4, 0xFFFFFF);
+                ctx.drawTextWithShadow(mc.textRenderer, text, 4, 4, 0xFFFFFFFF);
             }
         });
 

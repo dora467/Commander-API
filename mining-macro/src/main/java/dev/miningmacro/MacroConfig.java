@@ -7,6 +7,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -58,27 +59,43 @@ public class MacroConfig {
         public String item;
         /** 表示名に含まれる文字列。null なら名前を問わない。 */
         public String name;
-        /** CustomModelData。null なら問わない。 */
+        /** CustomModelData (最初の数値)。null なら問わない。 */
         public Integer customModelData;
+        /** item_model コンポーネント (独自の見た目のID)。null なら問わない。 */
+        public String itemModel;
 
         public boolean matches(ItemStack stack) {
             if (stack.isEmpty()) return false;
             if (item != null && !item.equals(Registries.ITEM.getId(stack.getItem()).toString())) return false;
             if (name != null && !stack.getName().getString().contains(name)) return false;
             if (customModelData != null) {
-                CustomModelDataComponent cmd = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
-                if (cmd == null || cmd.value() != customModelData) return false;
+                Integer v = modelData(stack);
+                if (v == null || !v.equals(customModelData)) return false;
             }
-            return item != null || name != null || customModelData != null;
+            if (itemModel != null && !itemModel.equals(model(stack))) return false;
+            return item != null || name != null || customModelData != null || itemModel != null;
         }
 
         public static PickupRule exact(ItemStack stack) {
             PickupRule r = new PickupRule();
             r.item = Registries.ITEM.getId(stack.getItem()).toString();
-            CustomModelDataComponent cmd = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
-            if (cmd != null) r.customModelData = cmd.value();
+            r.customModelData = modelData(stack);
+            // バニラと違う見た目が設定されている場合だけ記録する
+            String m = model(stack);
+            if (m != null && !m.equals(r.item)) r.itemModel = m;
             if (stack.get(DataComponentTypes.CUSTOM_NAME) != null) r.name = stack.getName().getString();
             return r;
+        }
+
+        private static Integer modelData(ItemStack stack) {
+            CustomModelDataComponent cmd = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
+            if (cmd == null || cmd.floats().isEmpty()) return null;
+            return Math.round(cmd.floats().get(0));
+        }
+
+        private static String model(ItemStack stack) {
+            Identifier id = stack.get(DataComponentTypes.ITEM_MODEL);
+            return id == null ? null : id.toString();
         }
 
         @Override
@@ -86,6 +103,7 @@ public class MacroConfig {
             StringBuilder sb = new StringBuilder(item == null ? "(ID不問)" : item);
             if (name != null) sb.append(" 名前~\"").append(name).append('"');
             if (customModelData != null) sb.append(" CMD=").append(customModelData);
+            if (itemModel != null) sb.append(" model=").append(itemModel);
             return sb.toString();
         }
     }

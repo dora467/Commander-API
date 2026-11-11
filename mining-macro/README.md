@@ -1,4 +1,4 @@
-# Mining Macro (Fabric / Java版 1.21.1)
+# Mining Macro (Fabric / Java版 1.21.8)
 
 範囲を指定して高さ2マスで掘り進めるクライアントMod です。
 水流・溶岩・穴を避け、鉱脈と指定アイテムを回収し、ツルハシの耐久が減ったら経験値瓶で自動修繕します。
@@ -7,7 +7,7 @@
 
 ## 導入
 
-1. Minecraft **1.21.1** + Fabric Loader + Fabric API を用意
+1. Minecraft **1.21.8** + Fabric Loader + Fabric API を用意
 2. このフォルダで `./gradlew build` → `build/libs/mining-macro-1.0.0.jar` を `mods` に入れる
    (GitHub Actions の `mining-macro build` の成果物 `mining-macro-jar` からも取得できます)
 
@@ -42,7 +42,7 @@
 ID も見た目も分からないアイテムへの対策を2段構えにしています。
 
 - **`pickup all` (初期値 true)** — 種類を問わず、範囲内に落ちたアイテムは全部拾いに行きます。事前登録なしでも独自アイテムを取り逃しません。
-- **指定アイテム** — 一度でも現物を見たら `/mm pickup nearest` (落ちている状態) か `/mm pickup hand` (拾った後) で登録してください。アイテムID・CustomModelData・カスタム名の組で記憶します。
+- **指定アイテム** — 一度でも現物を見たら `/mm pickup nearest` (落ちている状態) か `/mm pickup hand` (拾った後) で登録してください。アイテムID・CustomModelData・item_model・カスタム名の組で記憶します。
   指定アイテムは最優先で拾いに行き、`itemTimeoutTicks` (初期値 400tick = 20秒) 以内に拾えなければ**緊急停止して座標をチャットに出します**。
 
 ## 安全対策

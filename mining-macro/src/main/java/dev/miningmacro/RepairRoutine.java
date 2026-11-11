@@ -63,7 +63,7 @@ public class RepairRoutine {
     }
 
     void begin(ClientPlayerEntity p) {
-        pickSlot = p.getInventory().selectedSlot;
+        pickSlot = p.getInventory().getSelectedSlot();
         startRemaining = MacroController.remaining(p.getMainHandStack());
         clicks = 0;
         thrown = 0;
@@ -191,7 +191,7 @@ public class RepairRoutine {
             }
             case SWAP_OFFHAND -> {
                 if (mc.currentScreen != null) p.closeHandledScreen();
-                inv.selectedSlot = pickSlot;
+                inv.setSelectedSlot(pickSlot);
                 if (!MacroController.isPickaxe(p.getMainHandStack())) return fail("ツルハシが手元にありません");
                 swapHands(p);
                 timeout = 60;
@@ -213,7 +213,7 @@ public class RepairRoutine {
                     if (i < 9) { if (hot < 0) hot = i; } else if (main < 0) main = i;
                 }
                 if (hot >= 0) {
-                    inv.selectedSlot = hot;
+                    inv.setSelectedSlot(hot);
                     step = Step.THROW;
                     wait = pause(4, 5);
                 } else if (main >= 0) {
@@ -241,8 +241,8 @@ public class RepairRoutine {
                 double err = ctl.aim.step(p, throwYaw, throwPitch, ctl.cfg.rotationSpeed);
                 if (err > 6.0) break;
                 ActionResult r = mc.interactionManager.interactItem(p, Hand.MAIN_HAND);
-                if (r.isAccepted()) {
-                    if (r.shouldSwingHand()) p.swingHand(Hand.MAIN_HAND);
+                if (r instanceof ActionResult.Success success) {
+                    if (success.swingSource() == ActionResult.SwingSource.CLIENT) p.swingHand(Hand.MAIN_HAND);
                     thrown++;
                 }
                 wait = 4 + rng.nextInt(3);
@@ -256,7 +256,7 @@ public class RepairRoutine {
                 step = Step.SELECT_PICK;
             }
             case SELECT_PICK -> {
-                inv.selectedSlot = pickSlot;
+                inv.setSelectedSlot(pickSlot);
                 step = Step.SWAP_BACK;
                 wait = pause(4, 4); // スロット変更がサーバーへ届くのを待つ
             }
@@ -282,6 +282,6 @@ public class RepairRoutine {
 
     private Item buttonItem() {
         Identifier id = Identifier.tryParse(ctl.cfg.menuButtonItem);
-        return id == null ? Items.DISPENSER : Registries.ITEM.getOrEmpty(id).orElse(Items.DISPENSER);
+        return id != null && Registries.ITEM.containsId(id) ? Registries.ITEM.get(id) : Items.DISPENSER;
     }
 }

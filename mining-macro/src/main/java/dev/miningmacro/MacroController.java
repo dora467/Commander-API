@@ -143,7 +143,7 @@ public class MacroController {
         oreBlocks.clear();
         for (String id : cfg.ores) {
             Identifier ident = Identifier.tryParse(id);
-            if (ident != null) Registries.BLOCK.getOrEmpty(ident).ifPresent(oreBlocks::add);
+            if (ident != null && Registries.BLOCK.containsId(ident)) oreBlocks.add(Registries.BLOCK.get(ident));
         }
 
         buildOrder(px, pz);
